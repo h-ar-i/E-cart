@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import { Card, Col, Row } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { decQuantity, emptyCart, incQuantity, removeItem } from '../REDUX/Slices/cartSlice'
+import { toast,ToastContainer } from 'react-toastify'
+
 
 
 
 function Cart() {
+  const navigate = useNavigate()
   const cartItems = useSelector(state=>state.cartReducer)
     const [cartTotal,setCartTotal] =useState(0)
     const dispatch =useDispatch()
 
   useEffect(()=>{
+   
       if(cartItems?.length>0){
         setCartTotal(cartItems?.map(item=>item.totalPrice).reduce((t1,t2)=>t1+t2))
       }else{
@@ -29,6 +33,13 @@ function Cart() {
     }
   }
 
+  const handleCheckout =()=>{
+    dispatch(emptyCart())
+    toast.success("order placed successfully.....Thankyou for purchasing with us")
+    setTimeout(()=>{
+      navigate("/")
+    },1000)
+  }
   return (
     <>
     <Header />
@@ -90,7 +101,7 @@ function Cart() {
                 <h5>Total product: <b className='text-success'> {cartItems.length}</b></h5>
                 <h4>Total Amount: <b className='text-danger'>$ {cartTotal} </b></h4>
                 <div className="d-grid mt-5">
-                  <button className='btn btn-success'>Check Out</button>
+                  <button onClick={handleCheckout} className='btn btn-success'>Check Out</button>
                 </div>
 
               </div>
@@ -105,6 +116,8 @@ function Cart() {
         
         }
       </div>
+      <ToastContainer position='top-center' theme='colored' autoClose={3000}/>
+
     </>
   )
 }
